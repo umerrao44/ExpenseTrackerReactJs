@@ -6,7 +6,7 @@ const initialState = {
   }
     
     export const  expenseReducer = (state = initialState, action) =>{
-     
+     console.log(action.payload,"inreducer")
       switch (action.type) {
         case  `fetchExpenses`:
           return {
@@ -16,7 +16,7 @@ const initialState = {
           }
           
             case `deleteListValue`:
-              console.log(action.payload.id,'in delete list reducer')
+              console.log(action.payload,'in delete list reducer')
               console.log(state.expenses.filter((value)=> value.expenseHistory != action.payload.expenseHistory),'++++++++')
             return{
               ...state,

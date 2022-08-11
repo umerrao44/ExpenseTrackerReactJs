@@ -15,6 +15,7 @@ import { deleteList } from '../../redux-setup/ActionCreator';
 
 const ExpensesList = () => {
   const expenses = useSelector(state=>state.expenseReducer.expenses)
+  console.log(expenses,'in expenses')
   const dispatch = useDispatch();
   
  const handleRemove = (index) => {

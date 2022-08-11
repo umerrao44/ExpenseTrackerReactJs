@@ -1,97 +1,110 @@
 import *  as React from 'react';
-import { useState } from 'react';
+// import { useState } from 'react';
 import Box from '@mui/material/Box';
-import { Button, Grid ,FormControl} from '@mui/material';
+import {  Grid } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import { useDispatch } from 'react-redux';
-import { userList } from '../../redux-setup/ActionCreator';
 import { expenseList } from '../../redux-setup/ActionCreator';
 import classes from './BtnStyle.module.css'
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
 export default function AddExpenses() {
-  const [expenseHistory, setExpenseHistory] = useState('');
-  const [expenses, setExpenses] = useState('');
-  const[expenseHistoryValidate, setExpenseHistoryValidate] = useState(true);
-  const[expensesValidate, setExpensesValidate] = useState(true);
+
   const dispatch = useDispatch();
-  let a = 0;
 
-  const handleSubmit = (e)=>{
-    e.preventDefault();
-    console.log(id,"iddddd====")
-    if(expenseHistory.trim()  ===""  ){
-      setExpenseHistoryValidate(false)
-      return
-    
+  const initialValues = {
+    expenseHistory: '',
+    expenses: ''
+  }
+  const onSubmit = (values, { resetForm }) => {
+    const data = {
+      expenseHistory: values.expenseHistory,
+      expenses: values.expenses,
+      id: Math.random()
     }
-    if(expenses.trim() ===""){
-    setExpensesValidate(false)
-    return 
-  }
-   
-    setExpenseHistoryValidate(true)
-    setExpensesValidate(true)
-    dispatch(expenseList({
-      expenseHistory,
-      expenses,
-      id
 
-    }))
-   
-    setExpenseHistory('');
-    setExpenses('');
-    console.log(expenseHistory,"expese history onClick ")
+    dispatch(expenseList(
+      data
+
+    ))
+    resetForm({ values: '' })
+
+    console.log(values.expenseHistory, "values")
+
   }
-const id = Math.random()
-// console.log(id,'iddd')
+  const validationSchema = Yup.object().shape({
+    expenseHistory: Yup.string().required('Expense History is Required'),
+    expenses: Yup.string().required('Expense is Required')
+  
+  })
+  
+  const formik = useFormik({
+    initialValues,
+    onSubmit,
+    validationSchema,
+
+  })
+
+
+
+
   return (
-    <Grid sx={{position:'sticky'}}>
+    <Grid sx={{ position: 'sticky' }}>
 
       <Box
-        component="form"
+
         sx={{
           '& .MuiTextField-root': { m: 1, width: '50ch' },
-     
+
         }}
-        noValidate
-        autoComplete="off"
+
       >
-    
-          <div>
-          <form>
-         
+
+        <div>
+          <form onSubmit={formik.handleSubmit}>
+
             <TextField
-              required
+          
               variant="standard"
               id="standard-basic"
-              label={!expenseHistoryValidate && <p style={{color:'red'}}>Expense History not be empty</p>}
-              // placeholder='Enter Deatail'
-              value={expenseHistory}
-              onChange={((e) => {
-                setExpenseHistory(e.target.value)
-              })}
+              label="Enter History"
+              name='expenseHistory'
+              // value={formik.values.expenseHistory}
+              // onChange={formik.handleChange}
+              // onBlur={formik.handleBlur}
+              {...formik.getFieldProps('expenseHistory')}
+
             />
-        
+            { formik.touched.expenseHistory && formik.errors.expenseHistory && (
+              <div>{formik.errors.expenseHistory}</div> 
+            )}
+
             <br></br>
-            
+
             <TextField
-              required
+              
               variant="standard"
               type="number"
               id="standard-basic"
               label="Enter Expenses"
-              value={expenses}
-              onChange={((e) => {
-                setExpenses(e.target.value)
-              })}
-             
-            />
-               {!expensesValidate && <p style={{color:'red',marginTop:0}}>Expenses must not be empty</p>}
-</form>
+              name='expenses'
+              // value={formik.values.expenses}
+              // onChange={formik.handleChange}
+              // onBlur={formik.handleBlur}
+              {...formik.getFieldProps('expenses')}
+           
 
-          </div>
-          <button type='submit'  onClick={handleSubmit}  className={classes.btn} style={{width:"55ch",height:"7ch",backgroundColor:"#9875bb",color:"white",borderRadius:20,border:'none',marginTop:30,fontWeight:20,boxShadow:4 ,cursor:'pointer'}}>Add Transactions</button>
-        
+            />
+            {formik.touched.expenses && formik.errors.expenses && (
+              <div>{formik.errors.expenses}</div>
+            )}
+            <button type='submit' className={classes.btn} style={{ width: "55ch", height: "7ch", backgroundColor: "#9875bb", color: "white", borderRadius: 20, border: 'none', marginTop: 30, fontWeight: 20, boxShadow: 4, cursor: 'pointer' }}>Add Transactions</button>
+          </form>
+
+        </div>
+
+
       </Box>
 
     </Grid>
